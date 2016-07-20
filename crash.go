@@ -1,18 +1,33 @@
 package main
 
 import (
-	"crypto/tls"
+	"bufio"
+	"flag"
 	"fmt"
+	"os"
+	"strings"
 )
 
-func main() {
-	// Checking zero values for tls.Config.NextProtos
-	config := new(tls.Config)
-	fmt.Println("Zero value of tls.Config:", config.NextProtos)
+func prompt(question string) string {
+	reader := bufio.NewReader(os.Stdin)
+	fmt.Print(question)
+	input, _ := reader.ReadString('\n')
+	answer := strings.TrimSuffix(input, "\n")
+	return answer
+}
 
-	// Simple way to define at least one protocol
-	if config.NextProtos == nil {
-		config.NextProtos = []string{"http/1.1"}
+func parsePrompt(flagname, usage, question string) string {
+	var answer string
+	flag.StringVar(&answer, flagname, "", usage)
+	flag.Parse()
+	if answer == "" {
+		answer = prompt(question)
 	}
-	fmt.Println("New protocol:", config.NextProtos)
+	return answer
+}
+
+func main() {
+	// flag testing for days
+	sip := parsePrompt("sip", "Source IP address", "Source IP: ")
+	fmt.Println(sip)
 }
